@@ -1,13 +1,18 @@
 var mySongs = readTextFile();
 
+console.log(mySongs);
+
 const searchInput = document.querySelector('.input');
 
 searchInput.addEventListener("input", (e) => {
     let value = e.target.value
+    clearList()
 
     if (value && value.trim().length > 0){
          value = value.trim().toLowerCase()
-         setList(mySongs)
+         setList(mySongs.filter(song => {
+            return song.toLowerCase().includes(value)
+        }))
     } else {
         clearList()
     }
@@ -21,9 +26,7 @@ clearButton.addEventListener("click", () => {
 })
 
 function clearList(){
-    while (list.firstChild){
-        list.removeChild(list.firstChild)
-    }
+    list.innerHTML = ''
 }
 
 function noResults(){
@@ -37,10 +40,10 @@ function noResults(){
 
 function setList(results){
 
-    for (const person of results){
+    for (const song of results){
         const resultItem = document.createElement('li')
         resultItem.classList.add('result-item')
-        const text = document.createTextNode(person.name)
+        const text = document.createTextNode(song)
         resultItem.appendChild(text)
         list.appendChild(resultItem)
     }
@@ -50,23 +53,18 @@ function setList(results){
     }
 }
 
-
-
-
-
-
 function readTextFile()
 {
+    var allText = [];
     var rawFile = new XMLHttpRequest();
-    rawFile.open("GET", 'songs.txt', false);
+    rawFile.open("GET", 'songs.json', false);
     rawFile.onreadystatechange = function ()
     {
         if(rawFile.readyState === 4)
         {
             if(rawFile.status === 200 || rawFile.status == 0)
             {
-                var allText = rawFile.responseText;
-                alert(allText);
+                allText = JSON.parse(rawFile.responseText);
             }
         }
     }
