@@ -3,6 +3,26 @@
 .form {
     padding: 1rem;
 }
+#results {
+  padding: 1rem;
+}
+#prototype {
+  display: none;
+}
+.image {
+  float:left;
+}
+.result-text {
+  float:left;
+  padding-left: 10px;
+}
+.clear_float {
+  clear:left;
+}
+.result-line {
+  display: none;
+  padding-bottom: 5px;
+}
  
 .form input {
     width: 100%;
@@ -16,6 +36,7 @@
     font-family: "JetBrains Mono",monospace;
     transition: box-shadow .15s,transform .15s;
     font-size: 18px;
+    padding-left: 1rem;
 }
  
 .form button {
