@@ -12,10 +12,14 @@ searchInput.addEventListener("input", (e) => {
             value = value.trim().toLowerCase()
             setList(mySongs.filter(song => {
                 var splitVal = value.split(" ");
-                return splitVal.some(
+                var found = true;
+                splitVal.forEach(
                     function(value) {
-                        return song.toLowerCase().includes(value)
+                        if (!song.toLowerCase().includes(value)) {
+                            found = false;
+                        }
                     });
+                return found;
            }).slice(0,200))
        } else {
            clearList()
