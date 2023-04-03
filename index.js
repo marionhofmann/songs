@@ -7,36 +7,46 @@ const searchInput = document.querySelector('.input');
 
 searchInput.addEventListener("input", (e) => {
     let value = e.target.value
-    clearList()
+    if (value.trim().length >= 0) {
+        clearList();
+    }
     clearTimeout(this.delay);
     this.delay = setTimeout(function(){
-        if (value && value.trim().length > 3){
+        if (value && value.trim().length >= 3){
             value = value.trim().toLowerCase()
+            var splitVal = value.split(" ");
+            var maxVisible = 200;
             setVisible(Object.keys(mySongs).reduce(function(r, e) {
-                var splitVal = value.split(" ");
+                if (maxVisible <= 0) {
+                    return r;
+                }
                 var found = true;
                 splitVal.forEach(
                     function(value) {
                         if (!mySongs[e].toLowerCase().includes(value)) {
                             found = false;
                         }
-                    });
+                    })
                 if (found) {
-                    r[e] = mySongs[e]
+                    r[e] = mySongs[e];
+                    maxVisible--;
                 }
                 return r;
               }, {}))
-       } else {
-           clearList()
-       }
+        }
    }.bind(this), 800);
 });
 
 const clearButton = document.getElementById('clear');
 
-clearButton.addEventListener("click", () => {
-    clearList()
-})
+function startFresh(e) {
+    e.preventDefault();
+    document.getElementsByClassName("form")[0].reset();
+    document.getElementById('error').style.display = 'none';
+    
+    clearList();
+    return false;
+}
 
 function clearList(){
     var resultClass = document.getElementsByClassName('result-line');
@@ -46,23 +56,20 @@ function clearList(){
 }
 
 function noResults(){
-    const error = document.createElement('li')
-    error.classList.add('error-message')
-
-    const text = document.createTextNode('No results found. Sorry!')
-    error.appendChild(text)
-    list.appendChild(error)
+    console.log('no results ')
+    clearList();
+    document.getElementById('error').style.display = 'flex';
 }
 
 function setVisible(songs){
-
-    for (const [key, value] of Object.entries(songs)){
-
-        console.log(key);
-        console.log(value);
-        console.log(' ---- ');
-        list = document.getElementById(key);
-        list.style.display = 'block';
+    if (Object.keys(songs).length < 1) {
+        noResults();
+    } else {
+        document.getElementById('error').style.display = 'none';
+        for (const [key, value] of Object.entries(songs)){
+            list = document.getElementById(key);
+            list.style.display = 'flex';
+        }
     }
 }
 
@@ -76,13 +83,14 @@ function generateList(songs){
         clone.querySelectorAll('.result-text')[0].innerHTML = song;
         list.appendChild(clone)
     }
+    loadFavs();
 }
 
 function readTextFile()
 {
     var allText = [];
     var rawFile = new XMLHttpRequest();
-    rawFile.open("GET", 'songs.json?1', false);
+    rawFile.open("GET", 'songs.json?', false);
     rawFile.onreadystatechange = function ()
     {
         if(rawFile.readyState === 4 && (rawFile.status === 200 || rawFile.status == 0))
@@ -105,6 +113,46 @@ function readTextFile()
     return allText;
 }
 
+function loadFavs() {
+    var favList = getCookie('music-fav-list')
+    var favArr = favList.split(',')
+    favArr.forEach(function(val) {
+        if (val) {
+            var element = document.getElementById(val);
+            element.class = element.classList.add("my-fav");
+            element.querySelectorAll('img')[0].src="red-heart.png";
+        }
+    })
+}
+
+function showFavs(e) {
+    startFresh(e);
+    var favList = getCookie('music-fav-list')
+    var favArr = favList.split(',')
+
+    favArr.forEach(id => {
+        if (id) {
+            list = document.getElementById(id);
+            list.style.display = 'flex';
+        }
+    });
+}
+
+function toggleFav(element) {
+    var favList = getCookie('music-fav-list')
+
+    if (element.classList.contains("my-fav")) {
+        element.classList.remove("my-fav");
+        element.querySelectorAll('img')[0].src="white-heart.png";
+        favList = favList.replaceAll(element.id + ',','');
+    } else {
+        element.class = element.classList.add("my-fav");
+        element.querySelectorAll('img')[0].src="red-heart.png";
+        favList += element.id + ',';
+    }
+    setCookie('music-fav-list', favList);
+}
+
 function setCookie(name,value) {
     // max of 400 days expiry
     var date = new Date();
@@ -121,5 +169,5 @@ function getCookie(name) {
         while (c.charAt(0)==' ') c = c.substring(1,c.length);
         if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
     }
-    return null;
+    return '';
 }
