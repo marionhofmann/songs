@@ -3,6 +3,18 @@
 .form {
   padding: 1rem;
 }
+#headline {
+padding: 1rem 2rem 0;
+font-family: "JetBrains Mono",monospace;
+font-size: 22px;
+font-weight: bold;
+color: #001add;
+display: flex;
+align-items: center;
+}
+#headline > img {
+margin: 0 5px;
+}
 #results {
 padding: 1rem;
 }

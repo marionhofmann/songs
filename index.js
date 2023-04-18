@@ -90,7 +90,7 @@ function readTextFile()
 {
     var allText = [];
     var rawFile = new XMLHttpRequest();
-    rawFile.open("GET", 'songs.json?123', false);
+    rawFile.open("GET", 'songs.json?1234', false);
     rawFile.onreadystatechange = function ()
     {
         if(rawFile.readyState === 4 && (rawFile.status === 200 || rawFile.status == 0))
